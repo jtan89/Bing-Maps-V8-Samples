@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script type="text/javascript">
+      let map, redClusterLayer, blueClusterLayer;
+      let blueClusterVisible = true;
+      let redClusterVisible = true;
+
+      function GetMap() {
+        map = new Microsoft.Maps.Map("#myMap", {
+          zoom: 3
+        });
+
+        Microsoft.Maps.loadModule("Microsoft.Maps.Clustering", function() {
+          //Generate 1000 random pushpins in the map view for the red cluster layer.
+          let redPins = Microsoft.Maps.TestDataGenerator.getPushpins(
+            1000,
+            map.getBounds(),
+            { color: "red" }
+          );
+
+          //Generate 1000 random pushpins in the map view for the blue cluster layer.
+          let bluePins = Microsoft.Maps.TestDataGenerator.getPushpins(
+            1000,
+            map.getBounds(),
+            { color: "blue" }
+          );
+
+          //Generate first cluster layer with custom clustered pin.
+          redClusterLayer = new Microsoft.Maps.ClusterLayer(redPins, {
+            clusteredPinCallback: function(redPins) {
+              redPins.setOptions({ color: "red" });
+            },
+            gridSize: 80
+          });
+
+          //Generate second cluster layer with custom clustered pin.
+          blueClusterLayer = new Microsoft.Maps.ClusterLayer(bluePins, {
+            clusteredPinCallback: function(bluePins) {
+              bluePins.setOptions({ color: "blue" });
+            },
+            gridSize: 80
+          });
+
+          //Insert red and blue cluster layers to the map.
+          map.layers.insert(redClusterLayer);
+          map.layers.insert(blueClusterLayer);
+        });
+
+        //Create toggle for red cluster layer.
+        document.getElementById("redClusterToggle").onclick = function() {
+          if (redClusterVisible) {
+            redClusterLayer.setVisible(false);
+            redClusterVisible = false;
+          } else {
+            redClusterLayer.setVisible(true);
+            redClusterVisible = true;
+          }
+        };
+
+        //Create toggle for blue cluster layer.
+        document.getElementById("blueClusterToggle").onclick = function() {
+          if (blueClusterVisible) {
+            blueClusterLayer.setVisible(false);
+            blueClusterVisible = false;
+          } else {
+            blueClusterLayer.setVisible(true);
+            blueClusterVisible = true;
+          }
+        };
+      }
+    </script>
+    <script
+      type="text/javascript"
+      src="https://www.bing.com/api/maps/mapcontrol?callback=GetMap&key=[YOUR_BING_MAPS_KEY]"
+      async
+      defer
+    ></script>
+  </head>
+
+  <body>
+    <div id="myMap" style="position:relative;width:800px;height:600px;"></div>
+
+    <button id="redClusterToggle">Red Clusters</button>
+    <button id="blueClusterToggle">Blue Clusters</button>
+
+    <fieldset style="width:800px;margin-top:10px;">
+      <legend>Multiple Cluster Layer Sample</legend>
+      This sample shows how to create multiple cluster layers with the ability
+      to toggle their visibility.
+    </fieldset>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Basic Polygon Geometry Calculations</title>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+</head>
+
+<body>
+    <div id='printoutPanel'></div>
+
+    <div id='myMap' style='position:relative;width:800px;height:600px;'></div>
+    <script type='text/javascript'>
+
+        var map, layerItems, outputPanel;
+
+        function loadMapScenario() {
+
+            outputPanel = document.getElementById('output');
+            map = new Microsoft.Maps.Map(document.getElementById('myMap'), {});
+
+            Microsoft.Maps.loadModule('Microsoft.Maps.SpatialMath', function () {
+
+                var shape = Microsoft.Maps.TestDataGenerator.getPolygons(4, map.getBounds(), null, null, { fillColor: 'blue', strokeColor: 'green' });
+                var layer = new Microsoft.Maps.Layer();
+                layer.add(shape);
+                map.layers.insert(layer);
+
+                Microsoft.Maps.Events.addHandler(layer, 'click', function (target) { 
+                    clickedShape = target.primitive; 
+                    measure(clickedShape); 
+                });
+            });
+        }
+
+
+        function measure(shape) {
+
+            var area = Microsoft.Maps.SpatialMath.Geometry.area(shape, Microsoft.Maps.SpatialMath.AreaUnits.Acres);
+            var perimeter = Microsoft.Maps.SpatialMath.Geometry.calculateLength(shape, Microsoft.Maps.SpatialMath.DistanceUnits.Miles);
+            var centroid = Microsoft.Maps.SpatialMath.Geometry.centroid(shape);
+            outputPanel.innerHTML = 'Area: ' + area + ' Acres<br/>Perimeter: ' + perimeter + ' miles<br/>Centroid: ' + centroid;
+        }
+
+    </script>
+
+    
+
+    <div id="output"></div>
+
+    <fieldset style="width:800px;margin-top:10px;">
+        <legend>Additional Details</legend>
+        This example generates four polygons on a layer. Clicking on a polygon will output their Area and Perimeter. More Geometry Calculations can be found here: https://docs.microsoft.com/en-us/bingmaps/v8-web-control/modules/spatial-math-module/geometry-calculations
+      </fieldset>
+
+    <script type='text/javascript'
+        src='https://www.bing.com/api/maps/mapcontrol?key=BingMapsKey&callback=loadMapScenario'
+        async defer></script>
+</body>
+
+</html>
